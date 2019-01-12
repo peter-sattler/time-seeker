@@ -23,7 +23,7 @@ public final class TimeSeekerUnitTestHarness {
 
     @Test
     public void maximumTimeTestCase() throws TimeFittingException {
-        assertValidSolution(new int[] { 2, 9, 5, 3, 5, 9 }, "23:59:59");
+        assertValidSolution(new int[] { 2, 3, 5, 9, 5, 9 }, "23:59:59");
     }
 
     @Test
@@ -33,12 +33,12 @@ public final class TimeSeekerUnitTestHarness {
 
     @Test
     public void happyPathTestCase2() throws TimeFittingException {
-        assertValidSolution(new int[] { 1, 9, 9, 9, 1, 1 }, "19:19:19");
+        assertValidSolution(new int[] { 1, 9, 1, 9, 1, 9 }, "19:19:19");
     }
 
     @Test
     public void happyPathTestCase3() throws TimeFittingException {
-        assertValidSolution(new int[] { 1, 6, 2, 3, 4, 8 }, "12:36:48");
+        assertValidSolution(new int[] { 1, 2, 3, 6, 4, 8 }, "12:36:48");
     }
 
     @Test
@@ -53,7 +53,7 @@ public final class TimeSeekerUnitTestHarness {
 
     @Test
     public void happyPathTestCase6() throws TimeFittingException {
-        assertValidSolution(new int[] { 0, 0, 2, 4, 0, 0 }, "00:00:24");
+        assertValidSolution(new int[] { 0, 0, 0, 0, 2, 4 }, "00:00:24");
     }
 
     @Test
@@ -68,12 +68,12 @@ public final class TimeSeekerUnitTestHarness {
 
     @Test
     public void happyPathTestCase9() throws TimeFittingException {
-        assertValidSolution(new int[] { 2, 0, 0, 0, 2, 2 }, "00:02:22");
+        assertValidSolution(new int[] { 0, 0, 0, 2, 2, 2 }, "00:02:22");
     }
 
     @Test
     public void happyPathTestCase10() throws TimeFittingException {
-        assertValidSolution(new int[] { 2, 4, 0, 0, 0, 0 }, "00:00:24");
+        assertValidSolution(new int[] { 0, 0, 0, 0, 2, 4 }, "00:00:24");
     }
 
     @Test(expected = TimeFittingException.class)
@@ -110,8 +110,8 @@ public final class TimeSeekerUnitTestHarness {
 
     private String findEarliestImpl(int[] values) throws TimeFittingException {
         LOGGER.info("Testing values: {}", values);
-        final TimeSeeker formatter = new TimeSeeker(values);
-        final String actual = formatter.fitEarliest();
+        final TimeSeeker timeSeeker = new TimeSeeker(values);
+        final String actual = timeSeeker.fitEarliest();
         LOGGER.info("Earliest time: [{}]", actual);
         return actual;
     }
