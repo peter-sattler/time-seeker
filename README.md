@@ -1,4 +1,4 @@
-# Time Seeker 2018
+# Time Seeker
 
 Find the earliest valid 24-hour time (HH:MM:SS) that is possible with the given 6 digits
 
