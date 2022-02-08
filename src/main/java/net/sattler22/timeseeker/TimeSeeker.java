@@ -1,96 +1,110 @@
 package net.sattler22.timeseeker;
 
-import java.util.ArrayList;
+import java.time.LocalTime;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+
+import net.jcip.annotations.Immutable;
 
 /**
- * Time Seeker - Find the earliest valid 24-hour time (HH:MM:SS) that is possible with the given 6 digits
- * <p/>
- * <b>NOTE:</b> Encountered this problem at the 12/3/2018 Montefiore on-site interview.
+ * Time Seeker
+ * <p>
+ * Find the earliest valid 24-hour time (HH:MM:SS) that is possible with the given 6 digits
+ * </p>
  *
  * @author Pete Sattler
- * @version December 2018
+ * @version December 2018 (brute-force)
+ * @version February 2022 (rewrite)
  */
-public final class TimeSeeker {
+@Immutable
+final class TimeSeeker {
 
-    private final int[] data;
+    private static final String NO_SOLUTION_ERROR_MESSAGE_TEMPLATE = "No solution is possible for %s";
+    private final int[] digits;
 
     /**
      * Constructs a new time seeker
      *
-     * @param data An array of exactly 6 digits
+     * @param digits An array of exactly 6 positive digits
+     * @throws NullPointerException When digits is <code>NULL</code>
+     * @throws IllegalArgumentException When digits does not contain 6 positive values
      */
-    public TimeSeeker(int[] data) {
-        Objects.requireNonNull(data, "Data is required");
-        if (data.length != 6)
-            throw new IllegalArgumentException("Must have exactly 6 digits");
-        this.data = data;
+    TimeSeeker(int[] digits) {
+        Objects.requireNonNull(digits, "Digits is required");
+        this.digits = digits.clone();  //CAREFUL: Non-zero length arrays are always mutable!!!
+        if (this.digits.length != 6 || Arrays.stream(this.digits).filter(v -> v < 0).count() > 0)
+            throw new IllegalArgumentException("Must have exactly 6 positive digits");
     }
 
     /**
      * Find the earliest time
      *
-     * @return The earliest 24-time in HH:MM:SS format
+     * @return The earliest local time
      * @throws TimeFittingException When no solution is possible
      */
-    public synchronized String fitEarliest() throws TimeFittingException {
-        //First slot gets assigned smallest value between 0 and 2:
-        final TimeFittingEngine timeFittingEngine = new TimeFittingEngine(data);
-        final TimeSlot hourLeftSlot = TimeSlot.HOUR_LEFT_SLOT;
-        final int leftHourDigit = timeFittingEngine.fitMin(hourLeftSlot, 0, 2);
-        if (leftHourDigit == Integer.MAX_VALUE)
-            throw new TimeFittingException(String.format("%s could not be fitted", hourLeftSlot.getDescription()));
-
-        //For the right hour slot, try each remaining digit and see if the minutes and seconds can be fitted correctly: 
-        TimeFittingEngine timeFittingCheckpoint = new TimeFittingEngine(timeFittingEngine);
-        for (int index = 0; index < timeFittingCheckpoint.getRemaining().length; index++) {
-            final int rightHourDigit = timeFittingCheckpoint.getRemaining()[index];
-            if (leftHourDigit == 2 && rightHourDigit > 3)
-                continue;
-            timeFittingCheckpoint.setMin(TimeSlot.HOUR_RIGHT_SLOT, rightHourDigit);
-            if (fitMinutesAndSeconds(timeFittingCheckpoint))
-                break;
-            timeFittingCheckpoint = new TimeFittingEngine(timeFittingEngine);
-        }
-        timeFittingCheckpoint.assertHasAnswer();
-
-        return timeFittingCheckpoint.format24Hour().get();
-    }
-
-    /**
-     * Find two numbers between 0 and 59 for the minutes and seconds
-     *
-     * @return True if the fit was successful. Otherwise, returns false.
-     */
-    private boolean fitMinutesAndSeconds(TimeFittingEngine timeFittingEngine) {
-        final int[] digits = timeFittingEngine.getRemaining();
-        for (int tensDigitIndex = 0; tensDigitIndex < digits.length; tensDigitIndex++) {
-            final int tensDigit = digits[tensDigitIndex];
-            if (tensDigit >= 0 && tensDigit <= 5) {
-                final List<Integer> remainingTensDigits = Arrays.stream(digits).boxed().collect(Collectors.toList());
-                remainingTensDigits.remove(tensDigitIndex);  // Delete the ten's digit
-                for (int onesDigitIndex = 0; onesDigitIndex < remainingTensDigits.size(); onesDigitIndex++) {
-                    final List<Integer> remainingOnesDigits = new ArrayList<>(remainingTensDigits);
-                    remainingOnesDigits.remove(onesDigitIndex); // Delete one's digit
-                    final Integer seconds = remainingOnesDigits.get(0) * 10 + remainingOnesDigits.get(1);
-                    if (seconds >= 0 && seconds <= 59) {
-                        timeFittingEngine.setMin(TimeSlot.SECONDS_LEFT_SLOT, remainingOnesDigits.get(0));
-                        timeFittingEngine.setMin(TimeSlot.SECONDS_RIGHT_SLOT, remainingOnesDigits.get(1));
-                        timeFittingEngine.fitMin(TimeSlot.MINUTE_LEFT_SLOT, 0, 5);
-                        timeFittingEngine.fitMin(TimeSlot.MINUTE_RIGHT_SLOT, 0, 9);
-                        return true;
+    LocalTime findEarliest() {
+        //Loop thru each unique combination of indices, using each digit exactly once per attempt:
+        LocalTime result = null;
+        for (var hoursLeft = 0; hoursLeft < digits.length; hoursLeft++)
+            for (var hoursRight = 0; hoursRight < digits.length; hoursRight++) {
+                if (hoursRight == hoursLeft)
+                    continue;
+                for (var minutesLeft = 0; minutesLeft < digits.length; minutesLeft++) {
+                    if (minutesLeft == hoursLeft || minutesLeft == hoursRight)
+                        continue;
+                    for (var minutesRight = 0; minutesRight < digits.length; minutesRight++) {
+                        if (minutesRight == hoursLeft || minutesRight == hoursRight || minutesRight == minutesLeft)
+                            continue;
+                        for (var secondsRight = 0; secondsRight < digits.length; secondsRight++) {
+                            if (secondsRight == hoursLeft || secondsRight == hoursRight ||
+                                secondsRight == minutesLeft || secondsRight == minutesRight)
+                                continue;
+                            for (var secondsLeft = 0; secondsLeft < digits.length; secondsLeft++) {
+                                if (secondsLeft == hoursLeft || secondsLeft == hoursRight ||
+                                    secondsLeft == minutesLeft || secondsLeft == minutesRight || secondsLeft == secondsRight)
+                                    continue;
+                                final var hours = toTimeComponent(hoursLeft, hoursRight);
+                                final var minutes = toTimeComponent(minutesLeft, minutesRight);
+                                final var seconds = toTimeComponent(secondsLeft, secondsRight);
+                                //Validate the time components:
+                                if (hours < 24 && minutes < 60 && seconds < 60) {
+                                    final var newResult = LocalTime.of(hours, minutes, seconds);
+                                    result = result == null ? newResult : min(result, newResult);
+                                }
+                        }
                     }
                 }
             }
         }
-        return false;
+        if (result == null)
+            throw new TimeFittingException(String.format(NO_SOLUTION_ERROR_MESSAGE_TEMPLATE, Arrays.toString(digits)));
+        return result;
+    }
+
+    /**
+     * Convert 2 digits into a time component
+     *
+     * @param tensIndex The index of the ten's (left) digit
+     * @param onesIndex The index of the one's (right) digit
+     * @return The time component value (hours, minutes or seconds)
+     */
+    private int toTimeComponent(int tensIndex, int onesIndex) {
+        return digits[tensIndex] * 10 + digits[onesIndex];
+    }
+
+    /**
+     * Find the minimum time
+     *
+     * @param localTime1 A local time
+     * @param localTime2 Another local time
+     * @return The lesser of the two <code>LocalTime</code> values or the value itself if they are equal
+     */
+    private static LocalTime min(LocalTime localTime1, LocalTime localTime2) {
+        return localTime1.isBefore(localTime2) || localTime1.equals(localTime2) ? localTime1 : localTime2;
     }
 
     @Override
     public String toString() {
-        return String.format("%s [data=%s]", getClass().getSimpleName(), Arrays.toString(data));
+        return String.format("%s [data=%s]", getClass().getSimpleName(), Arrays.toString(digits));
     }
 }
