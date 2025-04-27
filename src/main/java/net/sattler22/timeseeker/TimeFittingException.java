@@ -9,7 +9,7 @@ package net.sattler22.timeseeker;
  */
 final class TimeFittingException extends IllegalStateException {
 
-    public TimeFittingException(String message) {
+    TimeFittingException(String message) {
         super(message);
     }
 }
