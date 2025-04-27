@@ -21,23 +21,20 @@ final class TimeSeekerUnitTest {
 
     @Test
     void nullDigitsParameterTestCase() {
-        assertThrows(NullPointerException.class, () -> {
-            findEarliestImpl(null);
-        });
+        assertThrows(NullPointerException.class, () ->
+                findEarliestImpl(null));
     }
 
     @Test
     void emptyDigitsParameterTestCase() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            findEarliestImpl(new int[] {});
-        });
+        assertThrows(IllegalArgumentException.class, () ->
+            findEarliestImpl(new int[] {}));
     }
 
     @Test
     void negativeParameterDigitsTestCase() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            findEarliestImpl(new int[] { 4, -1, 4, 5, 9, 9 });
-        });
+        assertThrows(IllegalArgumentException.class, () ->
+            findEarliestImpl(new int[] { 4, -1, 4, 5, 9, 9 }));
     }
 
     @Test
@@ -117,37 +114,32 @@ final class TimeSeekerUnitTest {
 
     @Test
     void noSolutionTestCase1() {
-        assertThrows(TimeFittingException.class, () -> {
-            findEarliestImpl(new int[] { 2, 4, 5, 9, 5, 9 });
-        });
+        assertThrows(TimeFittingException.class, () ->
+            findEarliestImpl(new int[] { 2, 4, 5, 9, 5, 9 }));
     }
 
     @Test
     void noSolutionTestCase2() {
-        assertThrows(TimeFittingException.class, () -> {
-            findEarliestImpl(new int[] { 2, 5, 5, 9, 5, 9 });
-        });
+        assertThrows(TimeFittingException.class, () ->
+            findEarliestImpl(new int[] { 2, 5, 5, 9, 5, 9 }));
     }
 
     @Test
     void noSolutionTestCase3() {
-        assertThrows(TimeFittingException.class, () -> {
-            findEarliestImpl(new int[] { 9, 2, 8, 6, 7, 0 });
-        });
+        assertThrows(TimeFittingException.class, () ->
+            findEarliestImpl(new int[] { 9, 2, 8, 6, 7, 0 }));
     }
 
     @Test
     void noSolutionTestCase4() {
-        assertThrows(TimeFittingException.class, () -> {
-            findEarliestImpl(new int[] { 4, 4, 4, 5, 9, 9 });
-        });
+        assertThrows(TimeFittingException.class, () ->
+            findEarliestImpl(new int[] { 4, 4, 4, 5, 9, 9 }));
     }
 
     @Test
     void noSolutionTestCase5() {
-        assertThrows(TimeFittingException.class, () -> {
-            findEarliestImpl(new int[] { 7, 6, 3, 8, 9, 9 });
-        });
+        assertThrows(TimeFittingException.class, () ->
+            findEarliestImpl(new int[] { 7, 6, 3, 8, 9, 9 }));
     }
 
     /**
