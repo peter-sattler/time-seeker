@@ -1,12 +1,12 @@
 package net.sattler22.timeseeker;
 
-import static java.time.format.DateTimeFormatter.ISO_TIME;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.time.format.DateTimeFormatter.ISO_TIME;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Time Seeker Unit Test Harness
@@ -151,8 +151,8 @@ final class TimeSeekerUnitTest {
 
     private static String findEarliestImpl(int[] digits) {
         try {
-            final var timeSeeker = new TimeSeeker(digits);
-            final var actual = ISO_TIME.format(timeSeeker.findEarliest());
+            final TimeSeeker timeSeeker = new TimeSeeker(digits);
+            final String actual = ISO_TIME.format(timeSeeker.findEarliest());
             logger.info("Earliest time for {} is [{}]", digits, actual);
             return actual;
         }

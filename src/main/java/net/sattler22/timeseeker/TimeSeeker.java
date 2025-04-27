@@ -1,10 +1,10 @@
 package net.sattler22.timeseeker;
 
+import net.jcip.annotations.Immutable;
+
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Objects;
-
-import net.jcip.annotations.Immutable;
 
 /**
  * Time Seeker
@@ -19,7 +19,6 @@ import net.jcip.annotations.Immutable;
 @Immutable
 final class TimeSeeker {
 
-    private static final String NO_SOLUTION_ERROR_MESSAGE_TEMPLATE = "No solution is possible for %s";
     private final int[] digits;
 
     /**
@@ -32,7 +31,7 @@ final class TimeSeeker {
     TimeSeeker(int[] digits) {
         Objects.requireNonNull(digits, "Digits is required");
         this.digits = digits.clone();  //CAREFUL: Non-zero length arrays are always mutable!!!
-        if (this.digits.length != 6 || Arrays.stream(this.digits).filter(v -> v < 0).count() > 0)
+        if (this.digits.length != 6 || Arrays.stream(this.digits).anyMatch(digit -> digit < 0))
             throw new IllegalArgumentException("Must have exactly 6 positive digits");
     }
 
@@ -43,32 +42,32 @@ final class TimeSeeker {
      * @throws TimeFittingException When no solution is possible
      */
     LocalTime findEarliest() {
-        //Loop thru each unique combination of indices, using each digit exactly once per attempt:
+        //Loop through each unique combination of indices, using each digit exactly once per attempt:
         LocalTime result = null;
-        for (var hoursLeft = 0; hoursLeft < digits.length; hoursLeft++)
-            for (var hoursRight = 0; hoursRight < digits.length; hoursRight++) {
+        for (int hoursLeft = 0; hoursLeft < digits.length; hoursLeft++)
+            for (int hoursRight = 0; hoursRight < digits.length; hoursRight++) {
                 if (hoursRight == hoursLeft)
                     continue;
-                for (var minutesLeft = 0; minutesLeft < digits.length; minutesLeft++) {
+                for (int minutesLeft = 0; minutesLeft < digits.length; minutesLeft++) {
                     if (minutesLeft == hoursLeft || minutesLeft == hoursRight)
                         continue;
-                    for (var minutesRight = 0; minutesRight < digits.length; minutesRight++) {
+                    for (int minutesRight = 0; minutesRight < digits.length; minutesRight++) {
                         if (minutesRight == hoursLeft || minutesRight == hoursRight || minutesRight == minutesLeft)
                             continue;
-                        for (var secondsRight = 0; secondsRight < digits.length; secondsRight++) {
+                        for (int secondsRight = 0; secondsRight < digits.length; secondsRight++) {
                             if (secondsRight == hoursLeft || secondsRight == hoursRight ||
                                 secondsRight == minutesLeft || secondsRight == minutesRight)
                                 continue;
-                            for (var secondsLeft = 0; secondsLeft < digits.length; secondsLeft++) {
+                            for (int secondsLeft = 0; secondsLeft < digits.length; secondsLeft++) {
                                 if (secondsLeft == hoursLeft || secondsLeft == hoursRight ||
                                     secondsLeft == minutesLeft || secondsLeft == minutesRight || secondsLeft == secondsRight)
                                     continue;
-                                final var hours = toTimeComponent(hoursLeft, hoursRight);
-                                final var minutes = toTimeComponent(minutesLeft, minutesRight);
-                                final var seconds = toTimeComponent(secondsLeft, secondsRight);
+                                final int hours = toTimeComponent(hoursLeft, hoursRight);
+                                final int minutes = toTimeComponent(minutesLeft, minutesRight);
+                                final int seconds = toTimeComponent(secondsLeft, secondsRight);
                                 //Validate the time components:
                                 if (hours < 24 && minutes < 60 && seconds < 60) {
-                                    final var newResult = LocalTime.of(hours, minutes, seconds);
+                                    final LocalTime newResult = LocalTime.of(hours, minutes, seconds);
                                     result = result == null ? newResult : min(result, newResult);
                                 }
                         }
@@ -77,7 +76,7 @@ final class TimeSeeker {
             }
         }
         if (result == null)
-            throw new TimeFittingException(String.format(NO_SOLUTION_ERROR_MESSAGE_TEMPLATE, Arrays.toString(digits)));
+            throw new TimeFittingException(String.format("No solution is possible for %s", Arrays.toString(digits)));
         return result;
     }
 
