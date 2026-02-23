@@ -9,12 +9,12 @@ import java.util.Objects;
 /**
  * Time Seeker
  * <p>
- * Find the earliest valid 24-hour time (HH:MM:SS) that is possible with the given 6 digits
+ * Find the earliest valid 24-hour time (HH:MM:SS) that is possible with the given six digits
  * </p>
  *
  * @author Pete Sattler
- * @version December 2018 (brute-force)
- * @version February 2022 (rewrite)
+ * @since December 2018
+ * @version May 2026
  */
 @Immutable
 final class TimeSeeker {
@@ -24,15 +24,14 @@ final class TimeSeeker {
     /**
      * Constructs a new time seeker
      *
-     * @param digits An array of exactly 6 positive digits
-     * @throws NullPointerException When digits is <code>NULL</code>
-     * @throws IllegalArgumentException When digits does not contain 6 positive values
+     * @param digits An array of exactly six non-negative digits [0-9]
      */
     TimeSeeker(int[] digits) {
         Objects.requireNonNull(digits, "Digits is required");
         this.digits = digits.clone();  //CAREFUL: Non-zero length arrays are always mutable!!!
-        if (this.digits.length != 6 || Arrays.stream(this.digits).anyMatch(digit -> digit < 0))
-            throw new IllegalArgumentException("Must have exactly 6 positive digits");
+        if (this.digits.length != 6 || Arrays.stream(this.digits).anyMatch(digit -> digit < 0 || digit > 9)) {
+            throw new IllegalArgumentException("Must have exactly 6 non-negative digits [0-9]");
+        }
     }
 
     /**
@@ -94,16 +93,16 @@ final class TimeSeeker {
     /**
      * Find the minimum time
      *
-     * @param localTime1 A local time
-     * @param localTime2 Another local time
-     * @return The lesser of the two <code>LocalTime</code> values or the value itself if they are equal
+     * @param left A local time
+     * @param right Another local time
+     * @return The lesser of the two {@code LocalTime} values or the value itself if they are equal
      */
-    private static LocalTime min(LocalTime localTime1, LocalTime localTime2) {
-        return localTime1.isBefore(localTime2) || localTime1.equals(localTime2) ? localTime1 : localTime2;
+    private static LocalTime min(LocalTime left, LocalTime right) {
+        return !left.isAfter(right) ? left : right;
     }
 
     @Override
     public String toString() {
-        return String.format("%s [data=%s]", getClass().getSimpleName(), Arrays.toString(digits));
+        return "%s [digits=%s]".formatted(getClass().getSimpleName(), Arrays.toString(digits));
     }
 }

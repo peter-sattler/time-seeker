@@ -3,10 +3,10 @@
     <artifactId>time-seeker</artifactId>
     <groupId>net.sattler22.timeseeker</groupId>
     <modelVersion>4.0.0</modelVersion>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>24</java.version>
+        <java.version>25</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <junit.version>6.0.3</junit.version>
@@ -46,7 +46,7 @@
             <plugins>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.5.4</version>
+                    <version>3.5.5</version>
                 </plugin>
             </plugins>
         </pluginManagement>
