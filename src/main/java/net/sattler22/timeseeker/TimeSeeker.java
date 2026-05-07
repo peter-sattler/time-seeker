@@ -53,13 +53,13 @@ final class TimeSeeker {
                     for (int minutesRight = 0; minutesRight < digits.length; minutesRight++) {
                         if (minutesRight == hoursLeft || minutesRight == hoursRight || minutesRight == minutesLeft)
                             continue;
-                        for (int secondsRight = 0; secondsRight < digits.length; secondsRight++) {
-                            if (secondsRight == hoursLeft || secondsRight == hoursRight ||
-                                secondsRight == minutesLeft || secondsRight == minutesRight)
+                        for (int secondsLeft = 0; secondsLeft < digits.length; secondsLeft++) {
+                            if (secondsLeft == hoursLeft || secondsLeft == hoursRight ||
+                                    secondsLeft == minutesLeft || secondsLeft == minutesRight)
                                 continue;
-                            for (int secondsLeft = 0; secondsLeft < digits.length; secondsLeft++) {
-                                if (secondsLeft == hoursLeft || secondsLeft == hoursRight ||
-                                        secondsLeft == minutesLeft || secondsLeft == minutesRight || secondsLeft == secondsRight)
+                            for (int secondsRight = 0; secondsRight < digits.length; secondsRight++) {
+                                if (secondsRight == hoursLeft || secondsRight == hoursRight ||
+                                        secondsRight == minutesLeft || secondsRight == minutesRight || secondsRight == secondsLeft)
                                     continue;
                                 final int hours = toTimeComponent(hoursLeft, hoursRight);
                                 final int minutes = toTimeComponent(minutesLeft, minutesRight);
