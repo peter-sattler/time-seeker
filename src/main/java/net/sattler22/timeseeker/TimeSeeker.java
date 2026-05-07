@@ -43,7 +43,7 @@ final class TimeSeeker {
     LocalTime findEarliest() {
         //Loop through each unique combination of indices, using each digit exactly once per attempt:
         LocalTime result = null;
-        for (int hoursLeft = 0; hoursLeft < digits.length; hoursLeft++)
+        for (int hoursLeft = 0; hoursLeft < digits.length; hoursLeft++) {
             for (int hoursRight = 0; hoursRight < digits.length; hoursRight++) {
                 if (hoursRight == hoursLeft)
                     continue;
@@ -59,7 +59,7 @@ final class TimeSeeker {
                                 continue;
                             for (int secondsLeft = 0; secondsLeft < digits.length; secondsLeft++) {
                                 if (secondsLeft == hoursLeft || secondsLeft == hoursRight ||
-                                    secondsLeft == minutesLeft || secondsLeft == minutesRight || secondsLeft == secondsRight)
+                                        secondsLeft == minutesLeft || secondsLeft == minutesRight || secondsLeft == secondsRight)
                                     continue;
                                 final int hours = toTimeComponent(hoursLeft, hoursRight);
                                 final int minutes = toTimeComponent(minutesLeft, minutesRight);
@@ -69,18 +69,19 @@ final class TimeSeeker {
                                     final LocalTime newResult = LocalTime.of(hours, minutes, seconds);
                                     result = result == null ? newResult : min(result, newResult);
                                 }
+                            }
                         }
                     }
                 }
             }
         }
         if (result == null)
-            throw new TimeFittingException(String.format("No solution is possible for %s", Arrays.toString(digits)));
+            throw new TimeFittingException("No solution is possible for %s".formatted(Arrays.toString(digits)));
         return result;
     }
 
     /**
-     * Convert 2 digits into a time component
+     * Convert two digits into a time component
      *
      * @param tensIndex The index of the ten's (left) digit
      * @param onesIndex The index of the one's (right) digit
