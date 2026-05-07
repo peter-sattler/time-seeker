@@ -28,20 +28,20 @@ final class TimeSeekerTest {
 
     @Test
     void newInstance_whenDigitsIsEmpty_thenThrowIllegalArgumentException() {
-        checkNewInstanceSpeed(new int[] {});
+        checkNewInstance(new int[] {});
     }
 
     @Test
     void newInstance_whenDigitIsNegative_thenThrowIllegalArgumentException() {
-        checkNewInstanceSpeed(new int[] { 4, -1, 4, 5, 9, 9 });
+        checkNewInstance(new int[] { 4, -1, 4, 5, 9, 9 });
     }
 
     @Test
     void newInstance_whenDigitExceedsMaximum_thenThrowIllegalArgumentException() {
-        checkNewInstanceSpeed(new int[] { 1, 2, 3, 4, 5, 999 });
+        checkNewInstance(new int[] { 1, 2, 3, 4, 5, 999 });
     }
 
-    private static void checkNewInstanceSpeed(int[] digits) {
+    private static void checkNewInstance(int[] digits) {
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 new TimeSeeker(digits)
         );
